@@ -1,0 +1,8 @@
+.idea/
+.vscode/
+bin/
+build/*
+cmake-build-debug/
+null.d 
+ktngb
+ktngb.exe
