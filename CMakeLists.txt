@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.14)
 project(ktngb)
 
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD 20)
+set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
+find_package(fmt)
 
 # raylib is there
 INCLUDE_DIRECTORIES(/usr/local/include)
@@ -21,6 +24,7 @@ file(GLOB all_SRCS
         "${PROJECT_SOURCE_DIR}/src/*.c"
 )
 
+
 add_executable(ktngb main.cpp ${all_SRCS} include/cartridge_reader.hpp src/cartridge_reader.cpp include/constants.hpp)
 
-TARGET_LINK_LIBRARIES(ktngb libraylib.so)
+TARGET_LINK_LIBRARIES(ktngb libraylib.so fmt::fmt)
