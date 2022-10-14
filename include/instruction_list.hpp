@@ -12,10 +12,15 @@
 #include "global_includes.hpp"
 #include "tools.hpp"
 
+enum class InstrType {
+    CBPrefixed, Unprefixed
+};
+
 struct Operand {
     std::string name;
     uint bytes = 0;
     bool immediate = false;
+    ByteArray value = ByteArray();
 
     Operand() = default;
 };
@@ -76,17 +81,19 @@ public:
      * @param type Type of the opcodes (either "unprefixed" or "cbprefixed")
      * @return
      */
-    std::vector<Instruction> getAllInstructions(nlohmann::json json_object, const std::string& type);
+    std::vector<Instruction> getAllInstructions(nlohmann::json json_object, const InstrType& instr_type);
 
-    Instruction getOpcode(uint opcode_idx, const std::string& type);
+    Instruction getOpcode(uint opcode_idx, const InstrType& instr_type);
     /**
      * Helper function to display all the Opcode/Operands keys, and all flags.
      * @param json_object The JSON object with load opcode data
      */
     void getAllOperandsKeys(nlohmann::json json_object);
 
+    std::string getEnumStr(const InstrType& type);
 
 
+    // Fuck encapsulation
     std::vector<Instruction> unprefixed;
     std::vector<Instruction> cbprefixed;
 };

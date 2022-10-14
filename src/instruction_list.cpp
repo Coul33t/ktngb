@@ -23,18 +23,21 @@ void InstructionsList::readJSONtoStruct(const std::string& filename) {
 
     //getAllOperandsKeys(json_object);
 
-    unprefixed = getAllInstructions(json_object, "unprefixed");
-    cbprefixed = getAllInstructions(json_object, "cbprefixed");
+    unprefixed = getAllInstructions(json_object, InstrType::Unprefixed);
+    cbprefixed = getAllInstructions(json_object, InstrType::CBPrefixed);
 
 }
 
-std::vector<Instruction> InstructionsList::getAllInstructions(nlohmann::json json_object, const std::string& type) {
+std::vector<Instruction> InstructionsList::getAllInstructions(nlohmann::json json_object, const InstrType& instr_type) {
     std::vector<Instruction> instruct_vect;
+
+    std::string type = getEnumStr(instr_type);
 
     for (auto& it_inst : json_object[type].items()) {
         Instruction inst;
 
         inst.opcode = Tools::hexToDec(it_inst.key());
+        inst.mnemonic = it_inst.value()["mnemonic"];
         inst.bytes = it_inst.value()["bytes"];
 
         for (auto& val: it_inst.value()["cycles"]) {
@@ -63,7 +66,10 @@ std::vector<Instruction> InstructionsList::getAllInstructions(nlohmann::json jso
     return instruct_vect;
 }
 
-Instruction InstructionsList::getOpcode(uint opcode_idx, const std::string& type) {
+Instruction InstructionsList::getOpcode(uint opcode_idx, const InstrType& instr_type) {
+
+    std::string type = getEnumStr(instr_type);
+
     if (type != "unprefixed" && type != "cbprefixed") {
         std::cout << "ERROR: either type is wrong "
                   << "(got " << type << ", expected either \"unprefixed\" or \"cbprefixed\") "
@@ -86,6 +92,7 @@ Instruction InstructionsList::getOpcode(uint opcode_idx, const std::string& type
     else if (type == "cbprefixed" && opcode_idx < cbprefixed.size() - 1)
         return cbprefixed[opcode_idx];
 }
+
 void InstructionsList::getAllOperandsKeys(nlohmann::json json_object) {
     std::set<std::string> all_opcode_keys;
     std::set<std::string> all_operands_keys;
@@ -128,5 +135,15 @@ void InstructionsList::getAllOperandsKeys(nlohmann::json json_object) {
     std::cout << "All flags:" << std::endl;
     for (auto& elem: all_flags) {
         std::cout << "  - " << elem << std::endl;
+    }
+}
+
+std::string InstructionsList::getEnumStr(const InstrType& type) {
+    if (type == InstrType::Unprefixed) {
+        return std::string{"unprefixed"};
+    }
+
+    else if (type == InstrType::CBPrefixed) {
+        return std::string{"cbprefixed"};
     }
 }
